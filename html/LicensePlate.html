@@ -1,0 +1,449 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>LicensePlate</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-05-07"><meta name="DC.source" content="LicensePlate.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput">close <span class="string">all</span>;
+clear <span class="string">all</span>;
+
+<span class="comment">%Phase 1-----------------------------------------------------------------</span>
+im=imread(<span class="string">'CA.jpg'</span>);  <span class="comment">%call original image</span>
+
+imshow(im),title(<span class="string">'Original Image'</span>);
+<span class="comment">%pause(3.8)</span>
+
+<span class="keyword">if</span> size(im,3)==3 <span class="comment">% RGB image</span>
+      im=rgb2gray(im);
+<span class="keyword">end</span>
+figure,imshow(im),title(<span class="string">'Gray Scale'</span>);
+pause(2)
+thrsh=graythresh(im);
+orig=~imbinarize(im,thrsh);
+figure,imshow(orig),title(<span class="string">'B&amp;W Image'</span>);
+<span class="comment">%pause(2.1)</span>
+im = bwareaopen(orig,5300);
+figure,imshow(im),title(<span class="string">'Sticker isolated using Open'</span>);
+<span class="comment">%pause(2.1)</span>
+im2=imsubtract(orig,im);
+figure,imshow(im2),title(<span class="string">'Removed sticker by Subtracting'</span>);
+<span class="comment">%pause(2.1)</span>
+im3=im2 &amp; ~bwareaopen(im2,5200);
+figure,imshow(im3),title(<span class="string">'Removed noise by subtracting'</span>);
+<span class="comment">%pause(2.1)</span>
+im11=im2double(im3);
+im5=imsubtract(im2,im11);
+figure,imshow(im5),title(<span class="string">'Contains some of the noise we want to remove'</span>);
+<span class="comment">%pause(2.1)</span>
+im4 = bwareaopen(im2,5290)+im11;
+<span class="comment">%figure,imshow(im4),title('Filtering');</span>
+<span class="comment">%pause(2.1)</span>
+imfinal= bwareaopen(im4,3000);
+figure,imshow(imfinal),title(<span class="string">'Final image to be processed'</span>);
+<span class="comment">%pause(1.8)</span>
+
+<span class="comment">%Phase 2---------------------------------------------------------------</span>
+<span class="comment">%%Show image binary image</span>
+figure;
+imshow(~imfinal),title(<span class="string">'Recognize Objects'</span>);
+<span class="comment">%pause(2.3)</span>
+<span class="comment">%%Label connected components</span>
+[L Ne]=bwlabel(imfinal);
+<span class="comment">%%Measure properties of image regions</span>
+propied=regionprops(L,<span class="string">'BoundingBox'</span>);
+hold <span class="string">on</span>
+<span class="comment">%%Plot Bounding Box</span>
+<span class="keyword">for</span> n=1:size(propied,1)
+      rectangle(<span class="string">'Position'</span>,propied(n).BoundingBox,<span class="string">'EdgeColor'</span>,<span class="string">'g'</span>,<span class="string">'LineWidth'</span>,2)
+<span class="keyword">end</span>
+hold <span class="string">off</span>
+pause (1)
+<span class="comment">%%Objects extraction</span>
+<span class="comment">%figure</span>
+
+<span class="keyword">for</span> n=1:Ne
+      [r,c] = find(L==n);
+      n1=imfinal(min(r):max(r),min(c):max(c));
+
+      figure, imshow(~n1),title(<span class="string">'Cropping Structure Element Found Using RegionProp'</span>);
+
+      <span class="comment">%pause(0.8)</span>
+      <span class="comment">%imsave;</span>
+<span class="keyword">end</span>
+
+<span class="comment">%pause(1.3)</span>
+<span class="comment">%close all;</span>
+
+<span class="comment">%Phase 3-----------------------------------------------------------------</span>
+two=imread(<span class="string">'2.bmp'</span>);
+four=imread(<span class="string">'4.bmp'</span>);
+six=imread(<span class="string">'6.bmp'</span>);
+seven=imread(<span class="string">'7.bmp'</span>);
+I=imread(<span class="string">'I.bmp'</span>);
+K=imread(<span class="string">'K.bmp'</span>);
+L=imread(<span class="string">'L.bmp'</span>);
+
+
+found6=imerode(imfinal,~six);
+f6=sum(found6);
+f66=sum(f6);
+<span class="keyword">if</span> f66==1
+
+    lValues=sprintf(<span class="string">'%d'</span>,6);
+<span class="keyword">end</span>
+
+
+figure,imshow(~six),title(<span class="string">'Identfied Value'</span>);
+
+
+foundL=imerode(imfinal,~L);
+
+[m, n] = size(foundL);
+
+<span class="comment">%issue we ran into because multiple Ls were being found</span>
+<span class="keyword">for</span> x = 1:m
+    <span class="keyword">for</span> y=1:n-18
+    foundL1(x,y)= foundL(x,y+18);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">%pause(3)</span>
+fL=sum(foundL1);
+fLL=sum(fL);
+
+<span class="keyword">if</span> fLL==1
+      lValues=sprintf(<span class="string">'%s%s'</span>,lValues, <span class="string">'L'</span>);
+<span class="keyword">end</span>
+
+pause(1.7)
+figure,imshow(~L),title(<span class="string">'Identfied Value'</span>);
+
+
+foundI=imerode(imfinal,~I);
+fI=sum(foundI);
+fII=sum(fI);
+<span class="keyword">if</span> fII==1
+
+    lValues=sprintf( <span class="string">'%s%s'</span>,lValues,<span class="string">'I'</span>);
+<span class="keyword">end</span>
+figure,imshow(~I),title(<span class="string">'Identfied Value'</span>);
+
+
+foundK=imerode(imfinal,~K);
+fK=sum(foundK);
+fKK=sum(fK);
+<span class="keyword">if</span> fKK==1
+
+    lValues=sprintf( <span class="string">'%s%s'</span>,lValues,<span class="string">'K'</span>);
+<span class="keyword">end</span>
+
+figure,imshow(~K),title(<span class="string">'Identfied Value'</span>);
+
+
+found2=imerode(imfinal,~two);
+f2=sum(found2);
+f22=sum(f2);
+<span class="keyword">if</span> f22==1
+
+    lValues=sprintf( <span class="string">'%s%d'</span>,lValues,2);
+<span class="keyword">end</span>
+
+<span class="comment">%pause(1.7)</span>
+figure,imshow(~two),title(<span class="string">'Identfied Value'</span>);
+
+
+found7=imerode(imfinal,~seven);
+f7=sum(found7);
+f77=sum(f7);
+<span class="keyword">if</span> f77==1
+
+    lValues=sprintf( <span class="string">'%s%d'</span>,lValues,7);
+<span class="keyword">end</span>
+
+
+figure,imshow(~seven),title(<span class="string">'Identfied Value'</span>);
+
+
+found4=imerode(imfinal,~four);
+f4=sum(found4);
+f44=sum(f4);
+<span class="keyword">if</span> f44==1
+
+    lValues=sprintf( <span class="string">'%s%d'</span>,lValues,4);
+<span class="keyword">end</span>
+
+figure,imshow(~four),title(<span class="string">'Identfied Value'</span>);
+
+
+disp(lValues);
+
+
+
+<span class="comment">%issues we ran into</span>
+
+<span class="comment">% Had issues using errosion because it picked up multiple Ls. We could have</span>
+<span class="comment">% used hit and miss but it didnt work. then we decised to remove the</span>
+<span class="comment">% section of the imafge that was causing that error.</span>
+
+<span class="comment">% using guess and check to remove unwanted data was time consuming.</span>
+
+<span class="comment">% could have used machine learning but we had not gotten into it yet.</span>
+
+<span class="comment">% over all the program works for this specific license plate.</span>
+</pre><pre class="codeoutput">6LIK274
+</pre><img vspace="5" hspace="5" src="LicensePlate_01.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_02.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_03.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_04.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_05.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_06.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_07.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_08.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_09.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_10.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_11.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_12.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_13.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_14.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_15.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_16.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_17.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_18.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_19.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_20.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_21.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_22.png" alt=""> <img vspace="5" hspace="5" src="LicensePlate_23.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+close all;
+clear all;
+
+%Phase 1REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+im=imread('CA.jpg');  %call original image
+
+imshow(im),title('Original Image');
+%pause(3.8)
+
+if size(im,3)==3 % RGB image
+      im=rgb2gray(im);
+end
+figure,imshow(im),title('Gray Scale');
+pause(2)
+thrsh=graythresh(im);
+orig=~imbinarize(im,thrsh);
+figure,imshow(orig),title('B&W Image');
+%pause(2.1)
+im = bwareaopen(orig,5300);
+figure,imshow(im),title('Sticker isolated using Open');
+%pause(2.1)
+im2=imsubtract(orig,im);
+figure,imshow(im2),title('Removed sticker by Subtracting');
+%pause(2.1)
+im3=im2 & ~bwareaopen(im2,5200);
+figure,imshow(im3),title('Removed noise by subtracting');
+%pause(2.1)
+im11=im2double(im3);
+im5=imsubtract(im2,im11);
+figure,imshow(im5),title('Contains some of the noise we want to remove');
+%pause(2.1)
+im4 = bwareaopen(im2,5290)+im11;
+%figure,imshow(im4),title('Filtering');
+%pause(2.1)
+imfinal= bwareaopen(im4,3000);
+figure,imshow(imfinal),title('Final image to be processed');
+%pause(1.8)
+
+%Phase 2REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+%%Show image binary image
+figure;
+imshow(~imfinal),title('Recognize Objects');
+%pause(2.3)
+%%Label connected components
+[L Ne]=bwlabel(imfinal);
+%%Measure properties of image regions
+propied=regionprops(L,'BoundingBox');
+hold on
+%%Plot Bounding Box
+for n=1:size(propied,1)
+      rectangle('Position',propied(n).BoundingBox,'EdgeColor','g','LineWidth',2)
+end
+hold off
+pause (1)
+%%Objects extraction
+%figure
+
+for n=1:Ne
+      [r,c] = find(L==n);
+      n1=imfinal(min(r):max(r),min(c):max(c));
+     
+      figure, imshow(~n1),title('Cropping Structure Element Found Using RegionProp');    
+      
+      %pause(0.8)
+      %imsave;
+end
+
+%pause(1.3)
+%close all;
+
+%Phase 3REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+two=imread('2.bmp');
+four=imread('4.bmp');
+six=imread('6.bmp');
+seven=imread('7.bmp');
+I=imread('I.bmp');
+K=imread('K.bmp');
+L=imread('L.bmp');
+
+
+found6=imerode(imfinal,~six);
+f6=sum(found6);
+f66=sum(f6);
+if f66==1
+    
+    lValues=sprintf('%d',6);
+end
+
+
+figure,imshow(~six),title('Identfied Value');
+
+
+foundL=imerode(imfinal,~L);
+
+[m, n] = size(foundL);
+
+%issue we ran into because multiple Ls were being found
+for x = 1:m
+    for y=1:n-18
+    foundL1(x,y)= foundL(x,y+18);
+    end
+end
+
+%pause(3)
+fL=sum(foundL1);
+fLL=sum(fL);
+
+if fLL==1
+      lValues=sprintf('%s%s',lValues, 'L');
+end
+
+pause(1.7)
+figure,imshow(~L),title('Identfied Value'); 
+
+
+foundI=imerode(imfinal,~I);
+fI=sum(foundI);
+fII=sum(fI);
+if fII==1
+    
+    lValues=sprintf( '%s%s',lValues,'I');
+end
+figure,imshow(~I),title('Identfied Value');
+
+
+foundK=imerode(imfinal,~K);
+fK=sum(foundK);
+fKK=sum(fK);
+if fKK==1
+    
+    lValues=sprintf( '%s%s',lValues,'K');
+end
+
+figure,imshow(~K),title('Identfied Value');
+
+
+found2=imerode(imfinal,~two);
+f2=sum(found2);
+f22=sum(f2);
+if f22==1
+    
+    lValues=sprintf( '%s%d',lValues,2);
+end
+
+%pause(1.7)
+figure,imshow(~two),title('Identfied Value');
+
+
+found7=imerode(imfinal,~seven);
+f7=sum(found7);
+f77=sum(f7);
+if f77==1
+    
+    lValues=sprintf( '%s%d',lValues,7);
+end
+
+
+figure,imshow(~seven),title('Identfied Value');
+
+
+found4=imerode(imfinal,~four);
+f4=sum(found4);
+f44=sum(f4);
+if f44==1
+    
+    lValues=sprintf( '%s%d',lValues,4);
+end
+
+figure,imshow(~four),title('Identfied Value');
+
+
+disp(lValues);
+
+
+
+%issues we ran into
+
+% Had issues using errosion because it picked up multiple Ls. We could have
+% used hit and miss but it didnt work. then we decised to remove the
+% section of the imafge that was causing that error.
+
+% using guess and check to remove unwanted data was time consuming. 
+
+% could have used machine learning but we had not gotten into it yet. 
+
+% over all the program works for this specific license plate.
+
+
+
+
+##### SOURCE END #####
+--></body></html>
